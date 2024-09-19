@@ -10,9 +10,11 @@ net session >nul 2>&1 || (echo. & echo Run Script As Admin & echo. & pause & exi
 
 :# General Power
 echo.
-echo 1/4 - General Power
-:: Set the 'Power Management' to High performance
-for /f "tokens=4,*" %%a in ('powercfg /l ^| find /i "High performance"') do powercfg /s %%a >nul 2>&1
+echo 1/4 - General Settings
+:: Disable Power Throttling
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" /v PowerThrottlingOff /t REG_DWORD /d 1 /f >nul 2>&1
+:: Stop logging when the network cable is disconnected
+reg add "HKLM\SYSTEM\CurrentControlSet\services\Tcpip\Parameters" /v DisableMediaSenseEventLog /t REG_DWORD /d 1 /f >nul 2>&1
 
 
 
@@ -24,6 +26,12 @@ for /F "tokens=1*" %%A in ('reg query "%RegPath%" ^| findstr "000"') do (
 
 :: Disable - Power Saving
 reg add %%A /t REG_SZ /v "*EEE" /d 0 /f >nul 2>&1
+reg add %%A /t REG_SZ /v "*WakeOnMagicPacket" /d 0 /f >nul 2>&1
+reg add %%A /t REG_SZ /v "*WakeOnPattern" /d 0 /f >nul 2>&1
+reg add %%A /t REG_SZ /v "*SelectiveSuspend" /d 0 /f >nul 2>&1
+reg add %%A /t REG_SZ /v "*ModernStandbyWoLMagicPacket" /d 0 /f >nul 2>&1
+reg add %%A /t REG_SZ /v EnablePME /d 0 /f >nul 2>&1
+reg add %%A /t REG_SZ /v EnableExtraPowerSaving /d 0 /f >nul 2>&1
 reg add %%A /t REG_SZ /v AdvancedEEE /d 0 /f >nul 2>&1
 reg add %%A /t REG_SZ /v AutoPowerSaveModeEnabled /d 0 /f >nul 2>&1
 reg add %%A /t REG_SZ /v EnableEDT /d 0 /f >nul 2>&1
@@ -33,39 +41,53 @@ reg add %%A /t REG_SZ /v ENPWMode /d 0 /f >nul 2>&1
 reg add %%A /t REG_SZ /v GPPSW /d 0 /f >nul 2>&1
 reg add %%A /t REG_SZ /v PowerSavingMode /d 0 /f >nul 2>&1
 reg add %%A /t REG_SZ /v ULPMode /d 0 /f >nul 2>&1
+reg add %%A /t REG_SZ /v HumanProximityDetection /d 0 /f >nul 2>&1
+reg add %%A /t REG_SZ /v S5WakeOnLan /d 0 /f >nul 2>&1
+reg add %%A /t REG_SZ /v MIMOPowerSaveMode /d 3 /f >nul 2>&1
 
 :: Disable - Reduce network speed to 10/100
 reg add %%A /t REG_SZ /v GigaLite /d 0 /f >nul 2>&1
-
-:: Disable - Allow the computer to turn off this device to save power  *Does not apear to work
-reg add %%A /t REG_DWORD /v PnPCapabilities /d 118 /f >nul 2>&1
 
 :: Disable - Logging of Adapter State
 reg add %%A /t REG_SZ /v LogDisconnectEvent /d 0 /f >nul 2>&1
 reg add %%A /t REG_SZ /v LogLinkStateEvent /d 16 /f >nul 2>&1
 )
 
-:: Stop logging when the network cable is disconnected
-reg add "HKLM\SYSTEM\CurrentControlSet\services\Tcpip\Parameters" /v DisableMediaSenseEventLog /t REG_DWORD /d 1 /f >nul 2>&1
-
 
 
 :# USB Devices
 echo 3/4 - USB Devices
-reg query "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USB" /s /f DeviceSelectiveSuspended > "%tmp%\SW\usb.txt"
-reg query "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USB" /s /f EnableSelectiveSuspend >> "%tmp%\SW\usb.txt"
-reg query "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USB" /s /f IdleInWorkingState >> "%tmp%\SW\usb.txt"
-reg query "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USB" /s /f SelectiveSuspendEnabled >> "%tmp%\SW\usb.txt"
-for /f "tokens=*" %%i in ('type "%tmp%\SW\usb.txt" ^| findstr "HKEY_LOCAL_MACHINE"') do (
- reg add "%%i" /v DeviceSelectiveSuspended /t REG_DWORD /d 0 /f >nul 2>&1
- reg add "%%i" /v EnableSelectiveSuspend /t REG_DWORD /d 0 /f >nul 2>&1
- reg add "%%i" /v IdleInWorkingState /t REG_DWORD /d 0 /f >nul 2>&1
- reg add "%%i" /v SelectiveSuspendEnabled /t REG_DWORD /d 0 /f >nul 2>&1
+setlocal enabledelayedexpansion
+set "baseKey1=HKLM\SYSTEM\ControlSet001\Enum\USB"
+set "baseKey2=HKLM\SYSTEM\CurrentControlSet\Enum\USB"
+set "searchValues=EnableSelectiveSuspend DeviceSelectiveSuspended EnhancedPowerManagementEnabled IdleInWorkingState SelectiveSuspendEnabled"
+for %%b in ("%baseKey1%" "%baseKey2%") do (
+    for /f "tokens=*" %%k in ('reg query "%%~b" /s /f "Device Parameters" /k') do (
+        if "%%k" neq "" (
+            for %%v in (%searchValues%) do (
+                reg query "%%k" /v %%v >nul 2>&1
+                if !errorlevel! == 0 reg add "%%k" /v %%v /t REG_DWORD /d 0 /f >nul 2>&1
+
+                reg query "%%k\WDF" >nul 2>&1
+                if !errorlevel! == 0 (
+                    reg query "%%k\WDF" /v %%v >nul 2>&1
+                    if !errorlevel! == 0 reg add "%%k\WDF" /v %%v /t REG_DWORD /d 0 /f >nul 2>&1
+                )
+            )
+        )
+    )
 )
+endlocal
 
 
-:# NICs - Allow the computer to turn off this device to save power  ** Could not make this work in batch
-echo 4/4 - Allow the computer to turn off this device to save power
+
+
+:# NICs - [Disable] Allow the computer to turn off this device to save power
+::
+:: ** Could not make this work in batch
+:: ** Works on 10, but not 11
+::
+echo 4/4 - Disable - Allow the computer to turn off this device to save power
 setlocal
 set "filePath=%tmp%\SW\power.ps1"
 echo $adapters = Get-WmiObject Win32_NetworkAdapter ^| Where-Object { $_.NetEnabled -eq $true } > "%filePath%"
