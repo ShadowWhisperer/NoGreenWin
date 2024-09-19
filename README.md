@@ -11,7 +11,7 @@ Generic
   - Disable Power Throttling
 
 Network Adapters 
-  - Disable - All "Green" stuff  
+  - Disable - Energy Savers
   - Disable - Auto-shutoff  
   - Disable - Logging of adapter state 
   - Disable - Throttling  
