@@ -5,20 +5,19 @@ Business down time + IT costs are going to be way more expensive than what these
 
 [View RAW](https://github.com/ShadowWhisperer/NoGreenWin/blob/main/AntiGreen.bat?raw=true)  
 
-Does  
 ---------- 
-Set 'Power Management' to High performance  
 
-NIC (Internal)  
-  - Disable - Power Saving
-  - Disable - Auto-shutoff
-  - Disable - Throttling
-  - Disable - Logging of adapter state
-  - Disable - Allow the computer to turn off this device to save power
+Generic
+  - Disable Power Throttling
 
+Network Adapters 
+  - Disable - All "Green" stuff  
+  - Disable - Auto-shutoff  
+  - Disable - Logging of adapter state 
+  - Disable - Throttling  
+  - Disable - WakeOnLAN
+  - Disable - Allow the computer to turn off this device to save power  * Only work on Win 10 ATM
 
-NIC (USB)  
-   - Still Testing
-
-USB 
-   - Still Testing
+USB  
+  - Disable - Idle Power  
+  - Disable - Selective Suspend  
