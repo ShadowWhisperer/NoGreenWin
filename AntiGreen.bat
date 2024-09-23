@@ -48,6 +48,16 @@ reg add %%A /t REG_SZ /v HumanProximityDetection /d 0 /f >nul 2>&1
 reg add %%A /t REG_SZ /v S5WakeOnLan /d 0 /f >nul 2>&1
 reg add %%A /t REG_SZ /v MIMOPowerSaveMode /d 3 /f >nul 2>&1
 
+:: USB SF Mode
+reg add %%A /t REG_SZ /v UsbSwFast /d 1 /f >nul 2>&1
+
+:: USB Switch Mode - 3
+reg add %%A /t REG_SZ /v ForcedUsbMode /d 8 /f >nul 2>&1
+
+::BeamCap - TxRx and HT Beam TxRx
+reg add %%A /t REG_SZ /v BeamformCap /d 54 /f >nul 2>&1
+
+
 :: Disable - Reduce network speed to 10/100
 reg add %%A /t REG_SZ /v GigaLite /d 0 /f >nul 2>&1
 
