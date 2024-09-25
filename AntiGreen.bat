@@ -10,7 +10,7 @@ net session >nul 2>&1 || (echo. & echo Run Script As Admin & echo. & pause & exi
 
 :# General Power
 echo.
-echo 1/4 - General Settings
+echo 1/5 - General Settings
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" /v PowerThrottlingOff /t REG_DWORD /d 1 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power" /v CsEnabled /t REG_DWORD /d 0 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power" /v EnergyEstimationEnabled /t REG_DWORD /d 0 /f >nul 2>&1
@@ -23,7 +23,7 @@ bcdedit /set disabledynamictick yes >nul 2>&1
 
 
 :# Network Interfaces
-echo 2/4 - Network Interfaces
+echo 2/5 - Network Interfaces
 set "RegPath=HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e972-e325-11ce-bfc1-08002be10318}"
 for /F "tokens=1*" %%A in ('reg query "%RegPath%" ^| findstr "000"') do (
 
@@ -69,7 +69,7 @@ reg add %%A /t REG_SZ /v LogLinkStateEvent /d 16 /f >nul 2>&1
 
 
 :# USB Devices
-echo 3/4 - USB Devices
+echo 3/5 - USB Devices
 setlocal enabledelayedexpansion
 set "baseKey1=HKLM\SYSTEM\ControlSet001\Enum\USB"
 set "baseKey2=HKLM\SYSTEM\CurrentControlSet\Enum\USB"
@@ -93,6 +93,11 @@ for %%b in ("%baseKey1%" "%baseKey2%") do (
 endlocal
 
 
+:# Keep NIC on, when DNS/Internet drops
+echo 4/5 - Keep NICs on
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WcmSvc\GroupPolicy" /v fMinimizeConnections /t REG_DWORD /d 0 /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WcmSvc\GroupPolicy" /v fSoftDisconnectConnections /t REG_DWORD /d 0 /f >nul 2>&1
+
 
 
 :# NICs - [Disable] Allow the computer to turn off this device to save power
@@ -100,7 +105,7 @@ endlocal
 :: ** Could not make this work in batch
 :: ** Works on 10, but not 11
 ::
-echo 4/4 - Disable - Allow the computer to turn off this device to save power
+echo 4/5 - Disable - Allow the computer to turn off this device to save power
 setlocal
 set "filePath=%tmp%\SW\power.ps1"
 echo $adapters = Get-WmiObject Win32_NetworkAdapter ^| Where-Object { $_.NetEnabled -eq $true } > "%filePath%"
