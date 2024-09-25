@@ -9,6 +9,7 @@ Business down time + IT costs are going to be way more expensive than what these
 
 Generic
   - Disable Power Throttling
+  - Keep NICs on, when network drops/has issues
 
 Network Adapters 
   - Disable - Energy Savers
