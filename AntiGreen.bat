@@ -19,6 +19,8 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power" /v HibernateEnabled /t REG
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power" /v IgnoreCsComplianceCheck /t REG_DWORD /d 1 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\services\Tcpip\Parameters" /v DisableMediaSenseEventLog /t REG_DWORD /d 1 /f >nul 2>&1
 bcdedit /set disabledynamictick yes >nul 2>&1
+::Enable High-Performance
+powercfg /s SCHEME_MIN
 
 
 
@@ -56,7 +58,6 @@ reg add %%A /t REG_SZ /v ForcedUsbMode /d 8 /f >nul 2>&1
 
 ::BeamCap - TxRx and HT Beam TxRx
 reg add %%A /t REG_SZ /v BeamformCap /d 54 /f >nul 2>&1
-
 
 :: Disable - Reduce network speed to 10/100
 reg add %%A /t REG_SZ /v GigaLite /d 0 /f >nul 2>&1
