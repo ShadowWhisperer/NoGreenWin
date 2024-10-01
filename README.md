@@ -8,7 +8,8 @@ Business down time + IT costs are going to be way more expensive than what these
 ---------- 
 
 Generic
-  - Disable Power Throttling
+  - Enable "High-Performance" power scheme
+  - Disable power throttling
   - Keep NICs on, when network drops/has issues
 
 Network Adapters 
@@ -17,7 +18,7 @@ Network Adapters
   - Disable - Logging of adapter state 
   - Disable - Throttling  
   - Disable - WakeOnLAN
-  - Disable - Allow the computer to turn off this device to save power  * Only work on Win 10 ATM
+  - Disable - Allow the computer to turn off this device to save power  * Only works on Win 10 ATM
 
 USB  
   - Disable - Idle Power  
