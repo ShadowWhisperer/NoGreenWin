@@ -11,6 +11,14 @@ net session >nul 2>&1 || (echo. & echo Run Script As Admin & echo. & pause & exi
 :# General Power
 echo.
 echo 1/5 - General Settings
+powercfg /change standby-timeout-ac 0 >nul 2>&1
+powercfg /change standby-timeout-dc 0 >nul 2>&1
+powercfg /change monitor-timeout-ac 0 >nul 2>&1
+powercfg /change monitor-timeout-dc 0 >nul 2>&1
+powercfg /hibernate off >nul 2>&1
+powercfg /change hibernate-timeout-ac 0 >nul 2>&1
+powercfg /change hibernate-timeout-dc 0 >nul 2>&1
+powercfg /change standby-hibernate-ac off >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" /v PowerThrottlingOff /t REG_DWORD /d 1 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power" /v CsEnabled /t REG_DWORD /d 0 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power" /v EnergyEstimationEnabled /t REG_DWORD /d 0 /f >nul 2>&1
@@ -19,8 +27,16 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power" /v HibernateEnabled /t REG
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power" /v IgnoreCsComplianceCheck /t REG_DWORD /d 1 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\services\Tcpip\Parameters" /v DisableMediaSenseEventLog /t REG_DWORD /d 1 /f >nul 2>&1
 bcdedit /set disabledynamictick yes >nul 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\ModernSleep" /v ModernSleepEnabled /t REG_DWORD /d 0 /f >nul 2>&1
 ::Enable High-Performance
-powercfg /s SCHEME_MIN
+powercfg /s SCHEME_MIN >nul 2>&1
+::Diable Core Parking
+powercfg -setacvalueindex SCHEME_MIN SUB_PROCESSOR CPMINCORES 100 >nul 2>&1
+powercfg -setacvalueindex SCHEME_MIN SUB_PROCESSOR CPMAXCORES 100 >nul 2>&1
+powercfg -setactive SCHEME_MIN >nul 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\0cc5b647-c1df-4637-891a-dec35c318583" /v Attributes /t REG_DWORD /d 0 /f >nul 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\3b04d4fd-1cc7-4f23-ab1c-d1337819c4bb" /v Attributes /t REG_DWORD /d 0 /f >nul 2>&1
+
 
 
 
@@ -124,6 +140,8 @@ endlocal
 
 
 echo.
-echo Finished
+echo.
+echo Reboot to Apply Changes
+echo.
 echo.
 pause
