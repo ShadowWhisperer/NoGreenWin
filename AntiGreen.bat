@@ -122,7 +122,7 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WcmSvc\GroupPolicy" /v fSoftDi
 :: ** Could not make this work in batch
 :: ** Works on 10, but not 11
 ::
-echo 4/5 - Disable - Allow the computer to turn off this device to save power
+echo 5/5 - Disable - Allow the computer to turn off this device to save power
 setlocal
 set "filePath=%tmp%\SW\power.ps1"
 echo $adapters = Get-WmiObject Win32_NetworkAdapter ^| Where-Object { $_.NetEnabled -eq $true } > "%filePath%"
